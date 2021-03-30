@@ -8,13 +8,13 @@ function readCache(key) {
 
 async function fetchCache(url, expireTime = 0) {
   const cached = readCache(url);
+  const willExpire = expireTime > 0;
+  const isExpired = cached?.expires < Date.now();
 
-  if (cached?.expires > Date.now()) {
-    // console.log("use cached data");
+  if (cached !== null && (!isExpired || !willExpire)) {
     return cached.data;
   }
 
-  // console.log("use fresh data");
   const response = await fetch(url);
   const data = await response.json();
   writeCache(url, data, expireTime);
